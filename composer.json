@@ -1,0 +1,22 @@
+{
+  "name": "quantumunit/filters",
+  "description": "filtermanager for php",
+  "minimum-stability": "dev",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "david",
+      "email": "david@quantumunit.com"
+    }
+  ],
+  "require": {
+    "symfony/monolog-bundle": "^3.8",
+    "symfony/yaml": "^5.4",
+    "quantumunit/utils": "dev-main",
+    "quantumunit/connection-manager": "dev-main",
+    "friendsofphp/php-cs-fixer": "dev-master"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.5"
+  }
+}
