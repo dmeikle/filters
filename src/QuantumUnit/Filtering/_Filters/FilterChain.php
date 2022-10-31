@@ -15,52 +15,38 @@
  * Time: 11:10 PM
  */
 
-namespace QuantumUnit\Filtering\Dispatch;
+namespace QuantumUnit\Filters\Filters;
 
 
-use QuantumUnit\Filtering\Filters\AbstractFilter;
-use QuantumUnit\Filtering\Http\HttpRequest;
+use QuantumUnit\Filters\Http\HttpRequest;
+use QuantumUnit\Filters\Http\HttpResponse;
 
-/**
- * FilterChain
- *
- * @author Organization: Quantum Unit
- * @author Developer: David Meikle <david@quantumunit.com>
- */
 class FilterChain
 {
+    const IMMEDIATE_WRITE = 'immediate_write';
 
-    private $filters = [];/*
+    const RESULT = 'result';
 
+    private $filters = array();
 
-    /**
-     * @param AbstractFilter $filter
-     * @return void
-     */
-    public function addFilter(AbstractFilter $filter): void
-    {
+    public function addFilter(AbstractFilter $filter) {
         $this->filters[] = $filter;
     }
 
-    /**
-     * @param HttpRequest $request
-     * @param FilterChain $chain
-     * @return void
-     */
-    public function execute(HttpRequest &$request, FilterChain &$chain): void {
+    public function execute(HttpRequest &$request, HttpResponse &$response, FilterChain &$chain) {
         $filter = $this->next();
-echo "\r\nhere";
+        //echo "filter " . get_class($filter)."<br>";
         if($filter !== false) {
-            echo "\r\nhave filter";
             //need to pass in for other methods deeper than the called method
             $filter->setHttpRequest($request);
-            $filter->execute($request, $chain);
+            $filter->setHttpResponse($response);
+            
+            $filter->execute($request, $response, $chain);
         }
+        
+        //exit gracefully
     }
 
-    /**
-     * @return false|mixed|null
-     */
     private function next() {
         if(count($this->filters) > 0) {
             return array_shift($this->filters);

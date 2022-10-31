@@ -19,13 +19,13 @@ namespace QuantumUnit\Filtering\Filters;
 
 
 use QuantumUnit\Filtering\Dispatch\FilterChain;
-use QuantumUnit\Filters\Http\HttpRequest;
+use QuantumUnit\Filtering\Http\HttpRequest;
 
 /**
  * LoadItemFilter
  *
- * @author Organization: Elentra Corp
- * @author Developer: David Meikle <david.meikle@elentra.com>
+ * @author Organization: Quantum Unit
+ * @author Developer: David Meikle <david@quantumunit.com>
  */
 class LoadItemFilter extends AbstractFilter
 {
@@ -37,19 +37,24 @@ class LoadItemFilter extends AbstractFilter
     public function execute(HttpRequest &$request, FilterChain &$chain): void {
         $this->httpRequest = $request;
 
-        $params = $this->filterConfig->get('params');
+        $params = $this->filterConfig->get(self::PARAMS);
 
         if(is_null($params)) {
             $params = array();
         }
         $params['isActive'] = '1';
 
-        $modelName = $this->filterConfig->get('model');
-        $model = new $modelName($request, $this->container->get('Logger'));
+        $modelName = $this->filterConfig->get(self::MODEL);
+        $model = new $modelName($request, $this->container->get(self::LOGGER));
 
-        $list = $this->getEntityManager()->getConnection('datasource1')->query(self::METHOD_GET, $model, 'get', $params);
+        $list = $this->getEntityManager()
+            ->getConnection(self::DATASOURCE)
+            ->query(self::METHOD_GET, $model, self::METHOD_GET, $params);
 
-        $request->setAttribute($this->filterConfig->get('key'), $list[ $this->filterConfig->get('responseKey')]);
+        $request->setAttribute(
+            $this->filterConfig->get(self::KEY),
+            $list[ $this->filterConfig->get(self::RESPONSE_KEY)]
+        );
         $chain->execute($request, $chain);
     }
 }

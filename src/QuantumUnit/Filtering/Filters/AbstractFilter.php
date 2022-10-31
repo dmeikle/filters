@@ -19,8 +19,8 @@ namespace QuantumUnit\Filtering\Filters;
 
  
 use QuantumUnit\Filtering\Dispatch\FilterChain;
-use QuantumUnit\Filters\Dispatch\FilterConfig;
-use QuantumUnit\Filters\Http\HttpRequest;
+use QuantumUnit\Filtering\Dispatch\FilterConfig;
+use QuantumUnit\Filtering\Http\HttpRequest;
 use Gossamer\Pesedget\Database\DatasourceFactory;
 use QuantumUnit\Utils\Container\ContainerTrait;
 
@@ -49,6 +49,13 @@ class AbstractFilter
     const VERB_SEARCH = 'search';
     const VERB_SAVE = 'save';
     const DIRECTIVES = 'directives';
+
+    const DATASOURCE = 'datasource';
+    const PARAMS = 'params';
+    const LOGGER = 'logger';
+    const MODEL = 'model';
+    const KEY = 'key';
+    const RESPONSE_KEY = 'responseKey';
 
     /**
      * AbstractFilter constructor.

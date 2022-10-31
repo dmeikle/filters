@@ -1,21 +1,11 @@
 <?php
-
-/**
- * Elentra ME [https://elentra.org]
+/*
+ *  This file is part of the Quantum Unit Solutions development package.
  *
- * Copyright 2022 Queen's University or its assignee ("Queen's"). All Rights Reserved.
+ *  (c) Quantum Unit Solutions <http://github.com/dmeikle/>
  *
- * This work is subject to Community Licenses ("CL(s)") between Queen's and its various licensee's,
- * respectively, and may only be viewed, accessed, used, reproduced, compiled, modified, copied or
- * exploited (together "Used") in accordance with a CL. Only Elentra or its licensees and their
- * respective Authorized Developers may Use this work in accordance with a CL. If you are not an
- * Authorized Developer, please contact Elentra Corporation (at info@elentra.com) or its applicable
- * licensee to review the rights and obligations under the applicable CL and become an Authorized
- * Developer before Using this work.
- *
- * @author    Organization: Elentra Corp
- * @author    Developer: David Meikle <dave.meikle@elentra.com>
- * @copyright Copyright 2022 Elentra Corporation. All Rights Reserved.
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
  */
 
 namespace QuantumUnit\Filtering\Config;
@@ -24,8 +14,8 @@ namespace QuantumUnit\Filtering\Config;
 /**
  * FilterEvents
  *
- * @author Organization: Elentra Corp
- * @author Developer: David Meikle <david.meikle@elentra.com>
+ * @author Organization: Quantum Unit
+ * @author Developer: David Meikle <david@quantumunit.com>
  */
 class FilterEvents
 {

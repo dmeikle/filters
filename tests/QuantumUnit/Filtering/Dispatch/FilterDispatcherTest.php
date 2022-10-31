@@ -1,41 +1,49 @@
 <?php
-
-/**
- * Elentra ME [https://elentra.org]
+/*
+ *  This file is part of the Quantum Unit Solutions development package.
  *
- * Copyright 2022 Queen's University or its assignee ("Queen's"). All Rights Reserved.
+ *  (c) Quantum Unit Solutions <http://github.com/dmeikle/>
  *
- * This work is subject to Community Licenses ("CL(s)") between Queen's and its various licensee's,
- * respectively, and may only be viewed, accessed, used, reproduced, compiled, modified, copied or
- * exploited (together "Used") in accordance with a CL. Only Elentra or its licensees and their
- * respective Authorized Developers may Use this work in accordance with a CL. If you are not an
- * Authorized Developer, please contact Elentra Corporation (at info@elentra.com) or its applicable
- * licensee to review the rights and obligations under the applicable CL and become an Authorized
- * Developer before Using this work.
- *
- * @author    Organization: Elentra Corp
- * @author    Developer: David Meikle <dave.meikle@elentra.com>
- * @copyright Copyright 2022 Elentra Corporation. All Rights Reserved.
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
  */
 
 namespace Tests\QuantumUnit\Filtering\Dispatch;
 
 
 use QuantumUnit\Filtering\Dispatch\FilterDispatcher;
+use QuantumUnit\Filtering\Http\HttpRequest;
+use QuantumUnit\Filtering\Http\RequestParams;
+use QuantumUnit\Filtering\Http\SiteParams;
+use QuantumUnit\Utils\Container\Container;
+use QuantumUnit\Utils\Logging\MonologLogger;
+use QuantumUnit\Utils\Yaml\YamlLoader;
 use tests\BaseTest;
 
 /**
  * FilterDispatcherTest
  *
- * @author Organization: Elentra Corp
- * @author Developer: David Meikle <david.meikle@elentra.com>
+ * @author Organization: Quantum Unit
+ * @author Developer: David Meikle <david@quantumunit.com>
  */
 class FilterDispatcherTest extends BaseTest
 {
 
+    /**
+     * @test
+     * @return void
+     * @throws \QuantumUnit\Utils\Exceptions\FileNotFoundException
+     */
     public function load_dispatcher__should_return_dispatcher(): void
     {
-        $dispatcher = new FilterDispatcher()
+        $siteParams = new SiteParams();
+        $requestParams = new RequestParams();
+        $httpRequest = new HttpRequest($requestParams,$siteParams);
+        $config = YamlLoader::loadConfig(__INPUT_PATH . 'filters.yml');
+        $container = new Container();
+        $dispatcher = new FilterDispatcher(new MonologLogger('test'), 'GET', $container, $config['test_filter_1']);
 
+        $result = $dispatcher->filterRequest($httpRequest);
+        $this->assertTrue($result);
     }
 }

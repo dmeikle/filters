@@ -15,13 +15,13 @@
  * Time: 11:08 PM
  */
 
-namespace QuantumUnit\Filtering\Dispatch;
+namespace QuantumUnit\Filters\Filters;
 
  
-use QuantumUnit\Filters\Dispatch\FilterConfig;
 use QuantumUnit\Filters\Http\HttpRequest;
+use QuantumUnit\Filters\Http\HttpResponse;
 use Gossamer\Pesedget\Database\DatasourceFactory;
-use QuantumUnit\Utils\Container\Container;
+use Gossamer\Set\Utils\Container;
 
 class AbstractFilter
 {
@@ -35,6 +35,7 @@ class AbstractFilter
 
     protected $httpRequest;
 
+    protected $httpResponse;
 
     const METHOD_DELETE = 'delete';
     const METHOD_SAVE = 'save';
@@ -58,19 +59,22 @@ class AbstractFilter
         $this->params = $params;
     }
 
-    /**
-     * @param HttpRequest $httpRequest
-     * @return void
-     */
     public function setHttpRequest(HttpRequest $httpRequest) {
         $this->httpRequest = $httpRequest;
     }
 
+    public function setHttpResponse(HttpResponse $httpResponse) {
+        $this->httpResponse = $httpResponse;
+    }
     /**
      * @param DatasourceFactory $datasourceFactory
      */
     public function setDatasourceFactory(DatasourceFactory $datasourceFactory) {
         $this->datasourceFactory = $datasourceFactory;
+    }
+
+    protected function getEntityManager() {
+        return $this->container->get('EntityManager');
     }
 
     /**
@@ -80,9 +84,32 @@ class AbstractFilter
         $this->container = $container;
     }
 
+    /**
+     * @param HttpRequest &$request
+     * @param HttpInterface $response
+     * @param FilterChain $chain
 
-    public function execute(HttpRequest &$request,  FilterChain &$chain) {
-        $chain->execute($request, $chain);
+    public function execute(HttpRequest &$request, HttpResponse &$response, FilterChain &$chain) {
+        try {
+
+            $chain->execute($request, $response, $chain);
+        } catch (\Exception $e) {
+ 
+        }
+    }
+*/
+    public function execute(HttpRequest &$request, HttpResponse &$response, FilterChain &$chain) {
+        try {
+            $value = $chain->execute($request, $response, $chain);
+        } catch (\Exception $e) {
+ 
+        }
     }
 
+    protected function setException(array $result) {
+        $this->httpResponse->setAttribute(FilterChain::IMMEDIATE_WRITE, 'true');
+
+        $this->httpResponse->setHeader('Content-Type', $this->filterConfig->get('content-type'));
+        $this->httpResponse->setAttribute('data',json_encode($result));
+    }
 }

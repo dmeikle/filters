@@ -8,64 +8,76 @@
  *  file that was distributed with this source code.
  */
 
-namespace QuantumUnit\Filtering\Dispatch;
-
-
-use QuantumUnit\Filtering\Http\HttpRequest;
-use QuantumUnit\Utils\Container\Container;
-use QuantumUnit\Utils\Container\ContainerTrait;
-use QuantumUnit\Utils\Logging\Contracts\LoggingInterface;
-
 /**
- * FilterDispatcher
- *
- * @author Organization: Quantum Unit
- * @author Developer: David Meikle <david@quantumunit.com>
+ * Created by PhpStorm.
+ * User: user
+ * Date: 3/2/2017
+ * Time: 11:07 PM
  */
+
+namespace QuantumUnit\Filters\Filters;
+
+
+use QuantumUnit\Filters\Http\HttpRequest;
+use QuantumUnit\Filters\Http\HttpResponse;
+use Gossamer\Neith\Logging\LoggingInterface;
+use Gossamer\Pesedget\Database\DatasourceFactory;
+use Gossamer\Set\Utils\Container;
+
 class FilterDispatcher
 {
-    use ContainerTrait;
 
     private $filterChain;
 
     private $logger;
 
-    /**
-     * @param LoggingInterface $logger
-     * @param string $httpMethod
-     * @param array $filterConfig
-     */
-    public function __construct(LoggingInterface $logger, string $httpMethod, Container $container, array $filterConfig = []) {
+    private $datasourceFactory;
+
+    private $container;
+
+    private $httpMethod;
+
+    public function __construct(LoggingInterface $logger, $httpMethod) {
         $this->filterChain = new FilterChain();
         $this->logger = $logger;
         $this->httpMethod = $httpMethod;
-        $this->container = $container;
-        $this->setFilters($filterConfig);
     }
 
-    /**
-     * @param array $filterConfig
-     * @return void
-     */
+    public function setContainer(Container $container) {
+        $this->container = $container;
+    }
+
+    public function setDatasources(DatasourceFactory $datasourceFactory) {
+        $this->datasourceFactory = $datasourceFactory;
+    }
+
     public function setFilters(array $filterConfig) {
 
         foreach ($filterConfig as $filterParams) {
 
             //if it's not a matching http method skip this filter
-            if(array_key_exists('method', $filterParams) && $filterParams['method'] !== $this->httpMethod) {
+            if(array_key_exists('method', $filterParams) && $filterParams['method'] != $this->httpMethod) {
                 continue;
             }
-
             $this->addFilter($filterParams);
         }
     }
 
-    /**
-     * @param array $filterParams
-     * @return void
-     */
-    protected function addFilter(array $filterParams) {
+    public function setFilterConfigurationPath($path, $keys = null) {
 
+        $config = $this->loadConfig($path);
+
+        if (!is_null($keys)) {
+            $keyList = explode('.', $keys);
+            foreach ($keyList as $key) {
+                $config = $config[$key];
+            }
+        }
+        $this->setFilters($config);
+    }
+
+    protected function addFilter($filterParams) {
+        
         $filterName = $filterParams['filter'];
         $filter = null;
 
@@ -76,19 +88,20 @@ class FilterDispatcher
         }
 
         $filter->setContainer($this->container);
+        
         $this->filterChain->addFilter($filter);
+
     }
 
-    /**
-     * @param array $filterParams
-     * @return FilterConfig
-     */
     protected function getFilterConfiguration(array $filterParams) {
-        return new FilterConfig($filterParams);
+        $filterConfig = new FilterConfig($filterParams);
+
+        return $filterConfig;
     }
 
     /**
      * @param HttpRequest &$request
+     * @param HttpInterface $response
      * @return bool
      * @throws \Exception
      *
@@ -96,14 +109,22 @@ class FilterDispatcher
      * then we found something to stop our processing of the request, and simply
      * output the response
      */
-    public function filterRequest(HttpRequest &$request): bool {
+    public function filterRequest(HttpRequest &$request, HttpResponse &$response) {
+
         try {
-            $this->filterChain->execute($request, $this->filterChain);
+            
+            $result = $this->filterChain->execute($request, $response, $this->filterChain);
+
+            if ($response->getAttribute(FilterChain::IMMEDIATE_WRITE) !== false) {
+                return $response->getAttribute(FilterChain::IMMEDIATE_WRITE);
+            }
         } catch (\Exception $e) {
+            //die($e->getMessage());
             $this->logger->addError($e->getMessage());
             throw $e;
         }
         //successful completion
         return true;
     }
+
 }

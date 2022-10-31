@@ -24,8 +24,8 @@ use QuantumUnit\Filters\Http\HttpRequest;
 /**
  * ListAllCachableFilter
  *
- * @author Organization: Elentra Corp
- * @author Developer: David Meikle <david.meikle@elentra.com>
+ * @author Organization: Quantum Unit
+ * @author Developer: David Meikle <david@quantumunit.com>
  */
 class ListAllCachableFilter extends AbstractCachableFilter
 {
@@ -41,13 +41,15 @@ class ListAllCachableFilter extends AbstractCachableFilter
         if($list === false) {
             $this->httpRequest = $request;
 
-            $params = $this->filterConfig->get('params') ?? [];
+            $params = $this->filterConfig->get(self::PARAMS) ?? [];
             $params['isActive'] = '1';
 
             $modelName = $this->filterConfig->get('model');
-            $model = new $modelName($request, $this->container->get('Logger'));
+            $model = new $modelName($request, $this->container->get(self::LOGGER));
 
-            $list = $this->getEntityManager()->getConnection($this->filterConfig->get('datasource'))->query(self::METHOD_GET, $model, 'listminimal', $params);
+            $list = $this->getEntityManager()
+                ->getConnection($this->filterConfig->get(self::DATASOURCE))
+                ->query(self::METHOD_GET, $model, 'listminimal', $params);
 
             $this->saveToCache($list);
         }

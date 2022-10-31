@@ -15,7 +15,7 @@
  * Time: 9:55 PM
  */
 
-namespace QuantumUnit\Utils\Http;
+namespace QuantumUnit\Filtering\Http;
 
 
 class SiteParams

@@ -15,30 +15,23 @@
  * Time: 11:08 PM
  */
 
-namespace QuantumUnit\Filtering\Dispatch;
+namespace QuantumUnit\Filters\Filters;
 
-/**
- * FilterConfig
- *
- * @author Organization: Quantum Unit
- * @author Developer: David Meikle <david@quantumunit.com>
- */
+
 class FilterConfig
 {
     private $config;
 
-    /**
-     * @param array $config
-     */
     public function __construct(array $config) {
         $this->config = $config;
     }
 
-    /**
-     * @param string $key
-     * @return mixed|null
-     */
-    public function get(string $key) {
-       return $this->config[$key] ?? null;
+    public function get($key) {
+        
+        if(array_key_exists($key, $this->config)) {
+            return $this->config[$key];
+        }
+
+        return null;
     }
 }

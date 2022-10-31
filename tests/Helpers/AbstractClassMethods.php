@@ -12,7 +12,7 @@
  * licensee to review the rights and obligations under the applicable CL and become an Authorized
  * Developer before Using this work.
  *
- * @author    Organization: Elentra Corp
+ * @author    Organization: Quantum Unit
  * @author    Developer: Joydip Deb <joydip.debe@elentra.com>
  * @copyright Copyright 2022 Elentra Corporation. All Rights Reserved.
  */

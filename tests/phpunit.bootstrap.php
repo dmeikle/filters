@@ -31,6 +31,7 @@ $loader->add('Monolog', __SITE_PATH . '/vendor/monolog/monolog/src');
 $loader->add('Auth0\SDK', __SITE_PATH . '/vendor/auth0/auth0-php/src/');
 $loader->add('PHPUnit\Framework', __SITE_PATH . '/vendor/phpunit/phpunit/src');
 $loader->add('QuantumUnit\Utils', $sitePath . '/vendor/quantumunit/utils/src');
+$loader->add('QuantumUnit\Connections', $sitePath . '/vendor/quantumunit/connection-manager/src');
 // activate the autoloader
 $loader->register();
 

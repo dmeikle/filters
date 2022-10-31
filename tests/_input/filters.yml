@@ -1,0 +1,14 @@
+test_filter_1:
+    -
+      event: request_start
+      filter: 'QuantumUnit\Filtering\Filters\ListAllFilter'
+      datasource: datasource1
+      model: 'components\shoppingcart\models\CartProductImageModel'
+      configKey: shoppingcart
+      configSubKey: categories
+    -
+      event: request_start
+      filter: 'QuantumUnit\Filtering\Filters\LoadItemFilter'
+      model: 'components\shoppingcart\models\CartProductImageModel'
+      configKey: shoppingcart
+      configSubKey: categoritest_filter_1es
