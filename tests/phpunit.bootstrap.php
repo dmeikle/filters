@@ -25,6 +25,7 @@ $loader = new Composer\Autoload\ClassLoader();
 // register classes with namespaces
 $loader->add('QuantumUnit', $sitePath . '/src');
 $loader->add('Tests', $sitePath . '/tests');
+$loader->add('Tests\Services', $sitePath . '/tests/Services');
 $loader->add('Tests\Input', $sitePath . '/tests/_input');
 $loader->add('Tests\Handlers', $sitePath . '/tests/Handlers');
 $loader->add('Monolog', __SITE_PATH . '/vendor/monolog/monolog/src');

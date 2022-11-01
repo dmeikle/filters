@@ -27,33 +27,24 @@ use QuantumUnit\Filtering\Http\HttpRequest;
  * @author Organization: Quantum Unit
  * @author Developer: David Meikle <david@quantumunit.com>
  */
-class ListAllFilter extends AbstractFilter
+class ListAllFilter extends ListAllCachableFilter
 {
+
     /**
      * @param HttpRequest $request
      * @param FilterChain $chain
      * @return void
      */
     public function execute(HttpRequest &$request, FilterChain &$chain): void {
-        $this->httpRequest = $request;
 
-        $params = $this->filterConfig->get(self::PARAMS) ?? [];
-
-        $params['isActive'] = '1';
-
-        $modelName = $this->filterConfig->get(self::MODEL);
-        $model = new $modelName($request, $this->container->get(self::LOGGER));
-
-        $list = $this->getEntityManager()->getConnection(
-            $this->filterConfig->get(self::DATASOURCE)
-        )->query(self::METHOD_GET, $model, 'listminimal', $params);
-
+        $list = $this->listValues($request);
         $request->setAttribute(
             $this->filterConfig->get(self::KEY),
-            $list[$this->filterConfig->get(self::RESPONSE_KEY)]
+            $list
         );
 
         $chain->execute($request, $chain);
-
     }
+
+
 }

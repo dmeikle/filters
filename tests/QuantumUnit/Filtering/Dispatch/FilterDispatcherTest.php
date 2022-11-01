@@ -11,6 +11,7 @@
 namespace Tests\QuantumUnit\Filtering\Dispatch;
 
 
+use QuantumUnit\Connections\Factories\ConnectionManagerFactory;
 use QuantumUnit\Filtering\Dispatch\FilterDispatcher;
 use QuantumUnit\Filtering\Http\HttpRequest;
 use QuantumUnit\Filtering\Http\RequestParams;
@@ -41,6 +42,9 @@ class FilterDispatcherTest extends BaseTest
         $httpRequest = new HttpRequest($requestParams,$siteParams);
         $config = YamlLoader::loadConfig(__INPUT_PATH . 'filters.yml');
         $container = new Container();
+        $connectionManager = ConnectionManagerFactory::getConnectionManager(__INPUT_PATH . 'valid.yml');
+        $container->set('ConnectionManager', $connectionManager);
+
         $dispatcher = new FilterDispatcher(new MonologLogger('test'), 'GET', $container, $config['test_filter_1']);
 
         $result = $dispatcher->filterRequest($httpRequest);

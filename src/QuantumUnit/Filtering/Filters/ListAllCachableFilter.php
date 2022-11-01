@@ -19,7 +19,7 @@ namespace QuantumUnit\Filtering\Filters;
 
 
 use QuantumUnit\Filtering\Dispatch\FilterChain;
-use QuantumUnit\Filters\Http\HttpRequest;
+use QuantumUnit\Filtering\Http\HttpRequest;
 
 /**
  * ListAllCachableFilter
@@ -39,23 +39,43 @@ class ListAllCachableFilter extends AbstractCachableFilter
         $list = $this->retrieveFromCache();
 
         if($list === false) {
-            $this->httpRequest = $request;
-
-            $params = $this->filterConfig->get(self::PARAMS) ?? [];
-            $params['isActive'] = '1';
-
-            $modelName = $this->filterConfig->get('model');
-            $model = new $modelName($request, $this->container->get(self::LOGGER));
-
-            $list = $this->getEntityManager()
-                ->getConnection($this->filterConfig->get(self::DATASOURCE))
-                ->query(self::METHOD_GET, $model, 'listminimal', $params);
-
+            $list = $this->listValues($request);
             $this->saveToCache($list);
         }
-
-        $request->setAttribute($this->filterConfig->get('key'), $list[ $this->filterConfig->get('responseKey')]);
+        $request->setAttribute(
+            $this->filterConfig->get(self::KEY),
+            $list
+        );
 
         $chain->execute($request, $chain);
+    }
+
+    protected function listValues(\QuantumUnit\Filtering\Http\HttpRequest &$request)
+    {
+        $this->httpRequest = $request;
+
+        $params = $this->filterConfig->get(self::PARAMS) ?? [];
+
+        $params['isActive'] = '1';
+
+        $modelName = $this->filterConfig->get(self::MODEL) ?? null;
+        $model = $modelName !== null ? new $modelName($request, $this->container->get(self::LOGGER)) : null;
+
+        $datasource = ($this->filterConfig->get(self::DATASOURCE));
+
+        if($datasource === self::LOCAL_DATASOURCE) {
+            return $this->queryModel($request, $model, $params);
+        }
+
+        $list = $this->getEntityManager()->getConnection(
+            $this->filterConfig->get(self::DATASOURCE)
+        )->execute(
+            self::METHOD_GET,
+            $model,
+            $this->filterConfig->get(self::SERVICE_FUNCTION),
+            $params
+        );
+
+        return $list[$this->filterConfig->get(self::RESPONSE_KEY)];
     }
 }

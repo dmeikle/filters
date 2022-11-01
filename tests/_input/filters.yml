@@ -1,14 +1,19 @@
+#remote connections require a configuration for Rest calls. This includes a model.
+#local connections require a configuration for an ORM call. This includes a Service and
+#the service function to get the SQL as a string so the filter can query it directly
+
 test_filter_1:
     -
       event: request_start
       filter: 'QuantumUnit\Filtering\Filters\ListAllFilter'
-      datasource: datasource1
-      model: 'components\shoppingcart\models\CartProductImageModel'
+      datasource: local
+      service: 'QuantumUnit\Filtering\Filters\TestService'
+      serviceFunction: 'getAllClientAuthorizations'
       configKey: shoppingcart
       configSubKey: categories
-    -
-      event: request_start
-      filter: 'QuantumUnit\Filtering\Filters\LoadItemFilter'
-      model: 'components\shoppingcart\models\CartProductImageModel'
-      configKey: shoppingcart
-      configSubKey: categoritest_filter_1es
+#    -
+#      event: request_start
+#      filter: 'QuantumUnit\Filtering\Filters\LoadItemFilter'
+#      model: 'components\shoppingcart\models\CartProductImageModel'
+#      configKey: shoppingcart
+#      configSubKey: categoritest_filter_1es

@@ -18,15 +18,18 @@
 namespace QuantumUnit\Filtering\Filters;
 
  
+use Illuminate\Support\Facades\DB;
 use QuantumUnit\Filtering\Dispatch\FilterChain;
 use QuantumUnit\Filtering\Dispatch\FilterConfig;
 use QuantumUnit\Filtering\Http\HttpRequest;
 use Gossamer\Pesedget\Database\DatasourceFactory;
 use QuantumUnit\Utils\Container\ContainerTrait;
+use ReflectionClass;
 
 class AbstractFilter
 {
     use ContainerTrait;
+
 
     protected $datasourceFactory;
 
@@ -37,6 +40,8 @@ class AbstractFilter
     protected $httpRequest;
 
     protected $httpResponse;
+
+    const CONNECTION_MANAGER = 'ConnectionManager';
 
     const METHOD_DELETE = 'delete';
     const METHOD_SAVE = 'save';
@@ -50,12 +55,16 @@ class AbstractFilter
     const VERB_SAVE = 'save';
     const DIRECTIVES = 'directives';
 
+    //filter configuration keys
     const DATASOURCE = 'datasource';
     const PARAMS = 'params';
     const LOGGER = 'logger';
     const MODEL = 'model';
     const KEY = 'key';
     const RESPONSE_KEY = 'responseKey';
+    const SERVICE = 'service';
+    const SERVICE_FUNCTION = 'serviceFunction';
+    const LOCAL_DATASOURCE = 'local';
 
     /**
      * AbstractFilter constructor.
@@ -86,7 +95,7 @@ class AbstractFilter
      * @return mixed
      */
     protected function getEntityManager() {
-        return $this->container->get('EntityManager');
+        return $this->container->get(self::CONNECTION_MANAGER);
     }
 
 
@@ -99,4 +108,20 @@ class AbstractFilter
         $chain->execute($request, $chain);
     }
 
+    /**
+     * @param HttpRequest $request
+     * @param $model
+     * @param array $params
+     * @return void
+     */
+    protected function queryModel(HttpRequest $request, $model, array $params)
+    {
+        $service = $this->filterConfig->get(self::SERVICE);
+        $class = new ReflectionClass($service);
+        $method = $this->filterConfig->get(self::SERVICE_FUNCTION);
+        $classMethod = $class->getMethod($method);
+        $sql = ($classMethod->invokeArgs(null,[]));
+
+        return DB::select($sql, $params);
+    }
 }
