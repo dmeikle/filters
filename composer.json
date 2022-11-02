@@ -14,14 +14,15 @@
     "symfony/yaml": "^5.4",
     "quantumunit/utils": "dev-main",
     "quantumunit/connection-manager": "dev-main",
-    "friendsofphp/php-cs-fixer": "dev-master"
+    "friendsofphp/php-cs-fixer": "dev-master",
+    "quantumunit/http": "dev-main"
   },
   "require-dev": {
     "phpunit/phpunit": "^9.5"
   },
   "autoload": {
     "psr-0": {
-      "Validation": "src/"
+      "QuantumUnit\\Filtering\\": "src/"
     }
   }
 }
